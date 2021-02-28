@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const empSchema = new mongoose.Schema({
 	fname:{
@@ -19,5 +20,13 @@ const empSchema = new mongoose.Schema({
 
 })
 
-const Register =  new mongoose.model("Register",empSchema);
+empSchema.pre("save", async function(next) {
+	if(this.isModified("password"))
+	{
+		this.password = await bcrypt.hash(this.password,10);
+	}
+	next();
+})
+
+const Register =  new mongoose.model("Register", empSchema);
 module.exports = Register;
